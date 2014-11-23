@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	    xmlns:aop="http://www.springframework.org/schema/aop"
+	    xmlns:tx="http://www.springframework.org/schema/tx"
+	    xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	    	http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+	    	http://www.springframework.org/schema/context 
+	    	http://www.springframework.org/schema/context/spring-context-3.0.xsd
+	   	 	http://www.springframework.org/schema/aop
+	   	 	http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+	   	 	http://www.springframework.org/schema/tx  
+			http://www.springframework.org/schema/tx/spring-tx-3.0.xsd">
+ 
+	<!-- 扫描下面的包 注解 -->
+	<context:component-scan base-package="com.losy" use-default-filters="false">
+		<context:include-filter type="annotation" expression="org.springframework.stereotype.Service"/>
+		<context:include-filter type="annotation" expression="org.springframework.stereotype.Repository"/>
+	</context:component-scan>
+	
+	<bean id="systemContextService" class="com.losy.common.utils.SpringContextListener"/>
+	<!-- 读取配置文件  ignore-unresolvable 为true时可以配置多个context:property-placeholder加载多个properties配置文件  
+	<context:property-placeholder location="classpath:/essential/db.properties" ignore-unresolvable="false"/>
+	-->
+	<!-- 开启aop注解 -->
+	<aop:aspectj-autoproxy />
+ 	 
+ 	 <!-- spring 线程池   -->
+	<bean id ="taskExecutor"  class ="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor" >
+		<!-- 线程池维护线程的最少数量 -->
+		<property name ="corePoolSize" value ="5" />
+		<!-- 线程池维护线程所允许的空闲时间 -->
+		<property name ="keepAliveSeconds" value ="30000" />
+		<!-- 线程池维护线程的最大数量 -->
+		<property name ="maxPoolSize" value ="1000" />
+		<!-- 线程池所使用的缓冲队列 -->
+		<property name ="queueCapacity" value ="200" />
+		<!-- <property name="threadNamePrefix" value=""></property> -->
+	</bean>
+ 	 
+ 	 
+ 	 <!--  c3p0数据源-->
+ 	 <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
+ 	 	<property name="driverClass" value="${db.driver}"/>
+ 	 	<property name="jdbcUrl" value="${db.url}"/>
+ 	 	<property name="user" value="${db.username}"/>	 		
+ 	 	<property name="password" value="${db.password}"/>	 	
+ 	 	<property name="minPoolSize" value="${c3p0.minPoolSize}"/>
+		<property name="maxPoolSize" value="${c3p0.maxPoolSize}"/>
+		<property name="initialPoolSize" value="${c3p0.initialPoolSize}"/>
+		<property name="maxIdleTime" value="${c3p0.maxIdleTime}"/>
+		<property name="acquireIncrement" value="${c3p0.acquireIncrement}"/>
+		<property name="acquireRetryAttempts" value="${c3p0.acquireRetryAttempts}"/>
+		<property name="acquireRetryDelay" value="${c3p0.acquireRetryDelay}"/>
+		<property name="testConnectionOnCheckin" value="${c3p0.testConnectionOnCheckin}"/>
+		<property name="automaticTestTable" value="${c3p0.automaticTestTable}"/>
+		<property name="idleConnectionTestPeriod" value="${c3p0.idleConnectionTestPeriod}"/>
+		<property name="checkoutTimeout" value="${c3p0.checkoutTimeout}"/>
+ 	 </bean>
+ 	 
+   <bean id="dataSources" class="com.losy.common.multidatasource.DynamicDataSource">
+   		<property name="targetDataSources">
+   			 <map key-type="java.lang.String">
+	   		 	 <entry value-ref="dataSource" key="default"></entry>
+	   		 	<!--  <entry value-ref="dataSourceTest" key="test"></entry> -->
+	  		 </map>
+   		</property>
+   		<property name="defaultTargetDataSource" ref="dataSource"></property>
+   </bean>	 
+
+   <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="configLocation" value="classpath:config/mybatis-config.xml" />
+		<property name="dataSource" ref="dataSources" />
+		<property name="mapperLocations">
+			<list>
+				<value>classpath*:/com/losy/**/sql/*Mapping.xml</value>
+			</list>
+		</property>
+	</bean>
+    
+    <!-- 配置事务管理器 -->
+   <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSources"/>
+	</bean>
+	 
+   
+    <!-- 配置哪些类哪些方法使用事务,false，标准的jdk动态代理实现，必须实现了接口的service才能被代理 -->
+    <aop:config proxy-target-class="false">
+		<aop:advisor advice-ref="txadvice" pointcut="execution(* com.losy..*Service*.*(..))"/>
+		<aop:advisor advice-ref="txadvice" pointcut="within(com.losy..service..*)"/>
+    </aop:config>
+    
+    <!-- 事务的传播特性  -->
+   <tx:advice id="txadvice" transaction-manager="transactionManager">
+   	<tx:attributes>
+   		<!--以add,del,modify开头的方法采用　required事务的传播特性  -->
+   		<tx:method name="add*" propagation="REQUIRED"/>
+   		<tx:method name="del*" propagation="REQUIRED"/>
+   		<tx:method name="modify*" propagation="REQUIRED"/>
+   		<tx:method name="update*" propagation="REQUIRED"/>
+   		<tx:method name="insert*" propagation="REQUIRED" rollback-for="java.sql.SQLException,java.lang.RuntimeException,java.lang.Exception"/>
+   		<tx:method name="remove*" propagation="REQUIRED"/>
+   		<tx:method name="delete*" propagation="REQUIRED"/>
+   		<tx:method name="execute*" propagation="REQUIRED"/>
+   		<tx:method name="save*" propagation="REQUIRED"/>
+   		<!-- 其它的方法  采用只读方式，hibernate在清理内存的时候不发sql语句   -->
+   		<tx:method name="*" propagation="SUPPORTS" read-only="true"/>
+   	</tx:attributes>
+   </tx:advice>
+   
+	<!-- 配置事物注解管理实现       cglib: proxy-target-class=true   
+	<tx:annotation-driven transaction-manager="transactionManager" proxy-target-class="true"/>
+	 -->	
+	  
+	 <!-- spring security自带的与权限有关的数据读写Jdbc模板 
+	<bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	-->
+	
+	<!-- 指定使用cglib代理	
+	<aop:aspectj-autoproxy proxy-target-class="true"></aop:aspectj-autoproxy>
+	 -->
+	 
+	 <!--  proxool数据源
+ 	<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+ 		<property name="driverClassName">
+ 			<value>org.logicalcobwebs.proxool.ProxoolDriver</value>
+ 		</property>
+ 		<property name="url">
+ 			<value>proxool.default</value>
+ 		</property>
+ 	</bean>
+ 	 -->
+	 
+</beans>

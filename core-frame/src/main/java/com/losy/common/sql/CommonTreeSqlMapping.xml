@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+   
+<mapper namespace="com.losy.sql.sqlmapping.CommonTree">
+	<resultMap type="com.losy.common.domain.CommonTree" id="vo">
+	    <result property="id" column="id" />
+	    <result property="pId" column="pId" />
+	    <result property="depth" column="depth" />
+	    <result property="nodeText" column="nodeText" />
+	    <result property="kindId" column="kindId" />
+	    <result property="isValid" column="isValid" />
+	    <result property="isLeaf" column="isLeaf" />
+	    <result property="desc" column="`desc`" />
+	    <result property="priority" column="priority" />
+	    <result property="updateTime" column="updateTime" />
+	    <result property="createTime" column="createTime" />
+	    <result property="flag" column="flag" />
+	</resultMap>
+
+	<select id="getObjectById" parameterType="java.lang.Integer" resultMap="vo">
+		select * from t_common_tree where id=#{id}
+	</select>
+	
+	<delete id="removeById" parameterType="java.lang.Integer">
+		delete from t_common_tree where id = #{id}
+	</delete>
+	
+	<delete id="removeByIds" >
+		delete from t_common_tree where id in 
+		<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</delete>	
+	
+	<delete id="removeEntityBatch" parameterType="java.util.List">
+		delete from t_common_tree where id in 
+		<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+			#{item.id}
+		</foreach>
+	</delete>	
+
+	<select id="getListByPage"  resultMap="vo">
+		select * from t_common_tree 
+		<where>
+		<if test="pId!=null">
+			AND pId = #{pId}
+		</if>	
+		<if test="depth!=null">
+			AND depth = #{depth}
+		</if>	
+	 	<if test="nodeText!=null and nodeText!=''">
+			AND nodeText like '%${nodeText}%'
+		</if> 	
+	 	<if test="flag!=null and flag!=''">
+			AND flag like '%${flag}%'
+		</if> 	
+		<if test="kindId!=null">
+			AND kindId = #{kindId}
+		</if>	
+		<if test="isValid!=null">
+			AND isValid = #{isValid}
+		</if>		
+		<if test="isLeaf!=null">
+			AND isLeaf = #{isLeaf}
+		</if>		
+	 	<if test="desc!=null and desc!=''">
+			AND `desc` like '%${desc}%'
+		</if> 	
+
+		<if test="priority!=null">
+			AND priority = #{priority}
+		</if>	
+
+		<if test="ltUpdateTime!=null and ltUpdateTime!=''">
+			<![CDATA[AND updateTime >= #{ltUpdateTime} ]]>
+		</if> 
+		<if test="gtUpdateTime!=null and gtUpdateTime!=''">
+			<![CDATA[AND updateTime <= #{gtUpdateTime} ]]>
+		</if> 
+		<if test="ltCreateTime!=null and ltCreateTime!=''">
+			<![CDATA[AND createTime >= #{ltCreateTime} ]]>
+		</if> 
+		<if test="gtCreateTime!=null and gtCreateTime!=''">
+			<![CDATA[AND createTime <= #{gtCreateTime} ]]>
+		</if> 
+		
+		<if test="appendWhere!=null and appendWhere!=''">
+			${appendWhere}
+		</if>
+		
+        </where>
+        ORDER BY 
+		<choose>
+			<when test="orderBy!=null and orderBy!=''">
+				${orderBy}
+			</when>
+			<otherwise>
+				priority
+			</otherwise>
+		</choose>
+		<choose>
+			<when test="descOrAsc!=null and descOrAsc!=''">
+				${descOrAsc}
+			</when>
+			<otherwise>
+				asc 
+			</otherwise>
+		</choose>
+	</select>
+	  <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+	  <!--
+	  <selectKey resultType="int" keyProperty="baseId" order="BEFORE">select nextval('seq_xxx')</selectKey>
+	  -->
+	  <![CDATA[
+	  INSERT INTO t_common_tree(
+			id,
+			pId,
+			depth,
+			nodeText,
+			kindId,
+			isValid,
+			isLeaf,
+			`desc`,
+			`flag`,
+			priority,
+			updateTime,
+			createTime
+			) VALUES (
+			#{id,jdbcType=VARCHAR},
+			#{pId,jdbcType=INTEGER},
+			#{depth,jdbcType=TINYINT},
+			#{nodeText,jdbcType=VARCHAR},
+			#{kindId,jdbcType=INTEGER},
+			#{isValid,jdbcType=BOOLEAN},
+			#{isLeaf,jdbcType=BOOLEAN},
+			#{desc,jdbcType=VARCHAR},
+			#{flag,jdbcType=VARCHAR},
+			#{priority,jdbcType=INTEGER},
+			#{updateTime,jdbcType=DATE},
+			#{createTime,jdbcType=DATE}
+		)	
+		]]>
+	  </insert>
+	  
+	  <insert id="insertBatch" parameterType="java.util.List">
+	  <![CDATA[
+	  		INSERT INTO t_common_tree(
+			id,
+			pId,
+			depth,
+			nodeText,
+			kindId,
+			isValid,
+			isLeaf,
+			`desc`,
+			`flag`,
+			priority,
+			updateTime,
+			createTime
+			) VALUES 
+		]]>
+		<foreach collection="list" item="item" separator=",">
+		<![CDATA[
+			 (#{item.id,jdbcType=VARCHAR},#{item.pId,jdbcType=INTEGER},#{item.depth,jdbcType=TINYINT},#{item.nodeText,jdbcType=VARCHAR},#{item.kindId,jdbcType=INTEGER},#{item.isValid,jdbcType=BOOLEAN},#{item.isLeaf,jdbcType=BOOLEAN},#{item.desc,jdbcType=VARCHAR},#{item.flag,jdbcType=VARCHAR},#{item.priority,jdbcType=INTEGER},#{item.updateTime,jdbcType=DATE},#{item.createTime,jdbcType=DATE})
+		]]>
+		</foreach>
+	  </insert>
+	  
+	  <update id="update">
+		UPDATE t_common_tree
+			<set>
+				<if test="pId!=null">
+					 <![CDATA[ pId = #{pId,jdbcType=INTEGER},  ]]>
+				</if>	
+				<if test="depth!=null">
+					 <![CDATA[ depth = #{depth,jdbcType=TINYINT},  ]]>
+				</if>	
+			 	<if test="nodeText!=null">
+					<![CDATA[nodeText = #{nodeText,jdbcType=VARCHAR},  ]]>
+				</if> 	
+				<if test="kindId!=null">
+					 <![CDATA[ kindId = #{kindId,jdbcType=INTEGER},  ]]>
+				</if>	
+				<if test="isValid!=null">
+					<![CDATA[ isValid = #{isValid,jdbcType=BOOLEAN},  ]]>
+				</if>		
+				<if test="isLeaf!=null">
+					<![CDATA[ isLeaf = #{isLeaf,jdbcType=BOOLEAN},  ]]>
+				</if>		
+			 	<if test="desc!=null">
+					<![CDATA[`desc` = #{desc,jdbcType=VARCHAR},  ]]>
+				</if> 	
+			 	<if test="flag!=null">
+					<![CDATA[`flag` = #{flag,jdbcType=VARCHAR},  ]]>
+				</if> 	
+		
+				<if test="priority!=null">
+					 <![CDATA[ priority = #{priority,jdbcType=INTEGER},  ]]>
+				</if>	
+			
+				<if test="updateTime!=null">
+					<![CDATA[updateTime = #{updateTime,jdbcType=DATE},  ]]>
+				</if> 
+				<if test="createTime!=null">
+					<![CDATA[createTime = #{createTime,jdbcType=DATE}  ]]>
+				</if> 
+			</set>
+			<where>
+			 <![CDATA[ and id = #{id,jdbcType=VARCHAR} ]]>  			  	
+			</where>  
+	  </update>	
+</mapper>
