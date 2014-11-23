@@ -1,0 +1,52 @@
+.paging {
+	width: 90%;
+	display:block;
+	padding : 20px;
+	text-align: center;
+	margin: auto;
+	position: relative;
+}
+
+.paging > span {
+	display: inline-block;
+	margin-left: 10px;
+	height: 18px;
+	text-align: center;
+	vertical-align: middle;
+	line-height: 18px;
+	background-color: #ffffff;
+	border: 1px solid #9FA0A0;
+	font-size: 12px;
+	cursor: pointer;
+}
+
+/** 去掉第一个span的margin-left */
+.paging > span:first-child {
+	margin-left: 0px;
+}
+
+/** 上一页和下一页 */
+.pageBtn {
+	width: 45px;
+}
+
+/** 页数 1 ,2 ,3,4 */
+.pageBtnNum {
+	width: 18px;
+}
+
+/** 省略号的按扭....... */
+.moreBtnNum {
+	width: 28px;
+	cursor: auto;
+}
+
+/**当前页 */
+.paging .selectBtnNum {
+	background-color : #036EB8;
+	color: white;
+	border: none;
+}
+
+
+

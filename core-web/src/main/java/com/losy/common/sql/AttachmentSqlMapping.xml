@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.losy.sql.sqlmapping.Attachment">
+	<resultMap type="com.losy.common.domain.Attachment" id="vo">
+	    <result property="id" column="id" />
+	    <result property="fileRealName" column="fileRealName" />
+	    <result property="fileName" column="fileName" />
+	    <result property="fileFolder" column="fileFolder" />
+	    <result property="fileSize" column="fileSize" />
+	    <result property="uploadName" column="uploadName" />
+	    <result property="groupId" column="groupId" />
+	    <result property="createTime" column="createTime" />
+	    <result property="uploadUser.userId" column="userId" />
+	    <result property="uploadUser.username" column="username" />
+	</resultMap>
+
+	<select id="getObjectById" parameterType="java.lang.Integer" resultMap="vo">
+		select tca.*,u.userId,u.username from t_common_attachment tca 
+		left join t_sys_userinfo u on(tca.userId = u.userId)
+		where tca.id=#{id}
+	</select>
+	
+	<delete id="removeById" parameterType="java.lang.Integer">
+		delete from t_common_attachment where id = #{id}
+	</delete>
+	
+	<delete id="removeByIds" >
+		delete from t_common_attachment where id in 
+		<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</delete>	
+	
+	<delete id="removeEntityBatch" parameterType="java.util.List">
+		delete from t_common_attachment where id in 
+		<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+			#{item.id}
+		</foreach>
+	</delete>	
+
+	<select id="getListByPage"  resultMap="vo">
+		select tca.*,u.userId,u.username from t_common_attachment tca 
+		left join t_sys_userinfo u on(tca.userId = u.userId)
+		<where>
+		<if test="id!=null and id!=''">
+			AND id = #{id}
+		</if>	
+	 	<if test="fileRealName!=null and fileRealName!=''">
+			AND fileRealName like '%${fileRealName}%'
+		</if> 	
+	 	<if test="fileName!=null and fileName!=''">
+			AND fileName like '%${fileName}%'
+		</if> 	
+	 	<if test="fileFolder!=null and fileFolder!=''">
+			AND fileFolder like '%${fileFolder}%'
+		</if> 	
+		<if test="fileSize!=null and fileSize!=''">
+			AND fileSize = #{fileSize}
+		</if>	
+	 	<if test="uploadName!=null and uploadName!=''">
+			AND uploadName like '%${uploadName}%'
+		</if> 	
+	 	<if test="groupId!=null and groupId!=''">
+			AND groupId like '%${groupId}%'
+		</if> 	
+		<if test="ltCreateTime!=null and ltCreateTime!=''">
+			<![CDATA[AND createTime >= #{ltCreateTime} ]]>
+		</if> 
+		<if test="gtCreateTime!=null and gtCreateTime!=''">
+			<![CDATA[AND createTime <= #{gtCreateTime} ]]>
+		</if> 
+		<if test="uploadUser !=null">
+			<if test="uploadUser.userId != null">
+				
+			</if>
+			<if test="uploadUser.username != null">
+				AND u.username like '%${uploadUser.username}%'
+			</if>
+		</if>
+		<if test="appendWhere != null and appendWhere != ''">
+			${appendWhere}
+		</if>
+        </where>
+        ORDER BY 
+		<choose>
+			<when test="orderBy!=null and orderBy!=''">
+				${orderBy}
+			</when>
+			<otherwise>
+				id
+			</otherwise>
+		</choose>
+		<choose>
+			<when test="descOrAsc!=null and descOrAsc!=''">
+				${descOrAsc}
+			</when>
+			<otherwise>
+				asc 
+			</otherwise>
+		</choose>
+	</select>
+	  <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+	  <!--
+	  <selectKey resultType="int" keyProperty="baseId" order="BEFORE">select nextval('seq_xxx')</selectKey>
+	  -->
+	  <![CDATA[
+	  INSERT INTO t_common_attachment(
+			id,
+			fileRealName,
+			fileName,
+			fileFolder,
+			fileSize,
+			uploadName,
+			groupId,
+			userId,
+			createTime
+			) VALUES (
+			#{id,jdbcType=INTEGER},
+			#{fileRealName,jdbcType=VARCHAR},
+			#{fileName,jdbcType=VARCHAR},
+			#{fileFolder,jdbcType=VARCHAR},
+			#{fileSize,jdbcType=INTEGER},
+			#{uploadName,jdbcType=VARCHAR},
+			#{groupId,jdbcType=VARCHAR},
+			#{uploadUser.userId,jdbcType=INTEGER},
+			#{createTime,jdbcType=TIMESTAMP}
+		)	
+		]]>
+	  </insert>
+	  
+	  <insert id="insertBatch" parameterType="java.util.List">
+	  <![CDATA[
+	  		INSERT INTO t_common_attachment(
+			id,
+			fileRealName,
+			fileName,
+			fileFolder,
+			fileSize,
+			uploadName,
+			groupId,
+			userId,
+			createTime
+			) VALUES 
+		]]>
+		<foreach collection="list" item="item" separator=",">
+		<![CDATA[
+			 (#{item.id,jdbcType=INTEGER},#{item.fileRealName,jdbcType=VARCHAR},#{item.fileName,jdbcType=VARCHAR},#{item.fileFolder,jdbcType=VARCHAR},#{item.fileSize,jdbcType=INTEGER},#{item.uploadName,jdbcType=VARCHAR},#{item.groupId,jdbcType=VARCHAR},#{item.uploadUser.userId,jdbcType=INTEGER},#{item.createTime,jdbcType=TIMESTAMP})
+		]]>
+		</foreach>
+	  </insert>
+	  
+	  <update id="update">
+		UPDATE t_common_attachment
+			<set>
+			 	<if test="fileRealName!=null">
+					fileRealName = #{fileRealName,jdbcType=VARCHAR}, 
+				</if> 	
+			 	<if test="fileName!=null">
+					fileName = #{fileName,jdbcType=VARCHAR}, 
+				</if> 	
+			 	<if test="fileFolder!=null">
+					fileFolder = #{fileFolder,jdbcType=VARCHAR}, 
+				</if> 	
+				<if test="fileSize!=null">
+					 fileSize = #{fileSize,jdbcType=INTEGER}, 
+				</if>	
+			 	<if test="uploadName!=null">
+					uploadName = #{uploadName,jdbcType=VARCHAR}, 
+				</if> 	
+			 	<if test="groupId!=null">
+					groupId = #{groupId,jdbcType=VARCHAR}, 
+				</if> 
+				<if test="uploadUser!=null and uploadUser.userId!=null">
+					userId = #{uploadUser.userId,jdbcType=INTEGER}, 
+				</if> 		
+				<if test="createTime!=null and createTime!=''">
+					<![CDATA[createTime = #{createTime,jdbcType=TIMESTAMP}  ]]>
+				</if> 
+			</set>
+			<where>
+			 <![CDATA[ and id = #{id,jdbcType=INTEGER} ]]>  	
+			</where>  
+	  </update>	
+	  
+	  <select id="getListByIds" resultMap="vo" parameterType="java.util.List">
+	  		select * from t_common_attachment where id in
+	  		<foreach collection="list" item="item" separator="," open="(" close=")">
+				<![CDATA[
+				 	#{item}
+				]]>
+			</foreach>
+	  </select>
+</mapper>

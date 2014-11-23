@@ -1,0 +1,39 @@
+body{ font-size:12px;}
+   .l-table-edit {}
+   .l-table-edit-td{ padding:4px;}
+   .l-button-submit,.l-button-test{width:80px; float:left; margin-left:10px; padding-bottom:2px;}
+   .l-verify-tip{ left:230px; top:120px;}
+   .l-table-edit-td select,.l-table-edit-td input {
+   	width: 180px;
+   }
+   .l-table-edit-td textarea {
+   	width: 99%;
+   	height: 40px;
+   }
+   
+  .easyui-datebox,.easyui-datebox,.textbox{
+  			width: 180px;
+  		}
+  		.easyui-combobox {
+  			width: 182px;
+  		}
+  .easyui-numberspinner {
+  		width: 182px;
+  }
+  .easyui-datetimebox {
+  	width: 180px;
+  }
+  
+  .uploadify-queue {
+  	border: 1px solid #AECAF0;min-height: 40px;width: 99%;
+  	margin-bottom: 0px;
+  	padding-bottom: 5px;
+  }
+  .uploadify {
+  	margin-bottom: 1px;
+  }
+  .uploadify-queue-item {
+  	width : 90%;
+  	margin-top: 5px;
+  	max-width: 1000px;
+  }

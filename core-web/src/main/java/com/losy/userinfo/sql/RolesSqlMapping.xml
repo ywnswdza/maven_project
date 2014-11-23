@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+   
+<mapper namespace="com.losy.sql.sqlmapping.Roles">
+	<resultMap type="com.losy.userinfo.domain.Roles" id="vo">
+	    <result property="roleId" column="roleId" />
+	    <result property="roleName" column="roleName" />
+	    <result property="roleDesc" column="roleDesc" />
+	    <result property="isEnabled" column="isEnabled" />
+	    <result property="roleFlag" column="roleFlag" />
+	    <result property="updateTime" column="updateTime" />
+	    <result property="createTime" column="createTime" />
+	</resultMap>
+
+	<select id="getObjectById" parameterType="java.lang.Integer" resultMap="vo">
+		select * from t_sys_roles where roleId=#{id}
+	</select>
+	
+	<delete id="removeById" parameterType="java.lang.Integer">
+		delete from t_sys_roles where roleId = #{roleId}
+	</delete>
+	
+	<delete id="removeByIds" >
+		delete from t_sys_roles where roleId in 
+		<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</delete>	
+	
+	<delete id="removeEntityBatch" parameterType="java.util.List">
+		delete from t_sys_roles where roleId in 
+		<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+			#{item.roleId}
+		</foreach>
+	</delete>	
+
+	<select id="getListByPage"  resultMap="vo">
+		select * from t_sys_roles 
+		<where>
+	 	<if test="roleName!=null and roleName!=''">
+			AND roleName like '%${roleName}%'
+		</if> 	
+	 	<if test="roleDesc!=null and roleDesc!=''">
+			AND roleDesc like '%${roleDesc}%'
+		</if> 	
+	 	<if test="roleFlag!=null and roleFlag!=''">
+			AND roleFlag like '%${roleFlag}%'
+		</if> 	
+		<if test="isEnabled!=null">
+			AND isEnabled = #{isEnabled}
+		</if>		
+		<if test="ltUpdateTime!=null and ltUpdateTime!=''">
+			<![CDATA[AND updateTime >= #{ltUpdateTime} ]]>
+		</if> 
+		<if test="gtUpdateTime!=null and gtUpdateTime!=''">
+			<![CDATA[AND updateTime <= #{gtUpdateTime} ]]>
+		</if> 
+		<if test="ltCreateTime!=null and ltCreateTime!=''">
+			<![CDATA[AND createTime >= #{ltCreateTime} ]]>
+		</if> 
+		<if test="gtCreateTime!=null and gtCreateTime!=''">
+			<![CDATA[AND createTime <= #{gtCreateTime} ]]>
+		</if> 
+        </where>
+        ORDER BY 
+		<choose>
+			<when test="orderBy!=null and orderBy!=''">
+				${orderBy}
+			</when>
+			<otherwise>
+				roleId
+			</otherwise>
+		</choose>
+		<choose>
+			<when test="descOrAsc!=null and descOrAsc!=''">
+				${descOrAsc}
+			</when>
+			<otherwise>
+				asc 
+			</otherwise>
+		</choose>
+	</select>
+	  <insert id="insert" useGeneratedKeys="true" keyProperty="roleId">
+	  <!--
+	  <selectKey resultType="int" keyProperty="baseId" order="BEFORE">select nextval('seq_xxx')</selectKey>
+	  -->
+	  <![CDATA[
+	  INSERT INTO t_sys_roles(
+			roleId,
+			roleName,
+			roleDesc,
+			isEnabled,
+			roleFlag,
+			updateTime,
+			createTime
+			) VALUES (
+			#{roleId,jdbcType=VARCHAR},
+			#{roleName,jdbcType=VARCHAR},
+			#{roleDesc,jdbcType=VARCHAR},
+			#{isEnabled,jdbcType=BOOLEAN},
+			#{roleFlag,jdbcType=VARCHAR},
+			#{updateTime,jdbcType=DATE},
+			#{createTime,jdbcType=DATE}
+		)	
+		]]>
+	  </insert>
+	  
+	  <insert id="insertBatch" parameterType="java.util.List">
+	  <![CDATA[
+	  		INSERT INTO t_sys_roles(
+			roleId,
+			roleName,
+			roleDesc,
+			isEnabled,
+			roleFlag,
+			updateTime,
+			createTime
+			) VALUES 
+		]]>
+		<foreach collection="list" item="item" separator=",">
+		<![CDATA[
+			 (#{item.roleId,jdbcType=VARCHAR},#{item.roleName,jdbcType=VARCHAR},#{item.roleDesc,jdbcType=VARCHAR},#{item.isEnabled,jdbcType=BOOLEAN} ,#{item.roleFlag,jdbcType=VARCHAR} ,#{item.updateTime,jdbcType=DATE},#{item.createTime,jdbcType=DATE})
+		]]>
+		</foreach>
+	  </insert>
+	  
+	  <update id="update">
+		UPDATE t_sys_roles
+			<set>
+			 	<if test="roleName!=null">
+					<![CDATA[roleName = #{roleName,jdbcType=VARCHAR},  ]]>
+				</if> 	
+			 	<if test="roleDesc!=null">
+					<![CDATA[roleDesc = #{roleDesc,jdbcType=VARCHAR},  ]]>
+				</if> 	
+			 	<if test="roleFlag!=null">
+					<![CDATA[roleFlag = #{roleFlag,jdbcType=VARCHAR},  ]]>
+				</if> 	
+				<if test="isEnabled!=null">
+					<![CDATA[ isEnabled = #{isEnabled,jdbcType=BOOLEAN},  ]]>
+				</if>		
+				<if test="updateTime!=null">
+					<![CDATA[updateTime = #{updateTime,jdbcType=DATE},  ]]>
+				</if> 
+				<if test="createTime!=null">
+					<![CDATA[createTime = #{createTime,jdbcType=DATE}  ]]>
+				</if> 
+			</set>
+			<where>
+			 <![CDATA[ and roleId = #{roleId,jdbcType=VARCHAR} ]]>  			  	
+			</where>  
+	  </update>	
+	  
+	  <select id="getListByUser" resultMap="vo">
+	  		<![CDATA[ SELECT r.* FROM t_sys_roles r
+					JOIN t_sys_user_roles ur ON(r.roleId = ur.roleId)
+					WHERE userId = #{userId}
+			]]> 
+	  </select>
+</mapper>

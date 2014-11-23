@@ -1,0 +1,85 @@
+.searchbar {
+	position: relative;
+	padding: 8px 20px 3px 5px;
+	background-color: #CEE6FF;
+	border: 1px solid #95BCE2;
+	margin-top: 10px;
+	margin-bottom: 10px;
+	
+}
+
+.item-cols {
+	position: relative;
+	display: inline-block;
+}
+
+.item-cols .content {
+
+	position: relative;
+	float: left;
+}
+
+.item-cols .title {
+
+	float: left;
+	position: relative;
+	width: 60px;
+	text-align: right;
+}
+
+.easyui-datebox,.easyui-datetimebox,.textbox {
+	width: 150px;
+}
+
+.easyui-combobox {
+	width: 152px;
+}
+
+.easyui-numberspinner {
+	width: 148px;
+}
+
+.searchbar.content input,.content select {
+	width: 150px;
+}
+
+.eventbar .l-button {
+	border: 1px solid #D3D3D3;
+	color: #333333;
+	cursor: pointer;
+	height: 28px;
+	line-height: 24px;
+	overflow: hidden;
+	position: relative;
+	text-align: center;
+	width: 80px;
+	border-radius : 5px;
+	background  : url("search.png") no-repeat scroll 10px center #ffffff;
+}
+
+.eventbar .l-button:HOVER {
+	background-color: #eaf2ff;
+}
+
+.searchbar .eventbar { /* float: right; */
+	padding-left: 10px;
+	text-align : right;
+	position: relative;
+	display : inline-block;
+	top : -6px;
+	clear: both;
+}
+
+.searchbar .dateLabel {
+	float: left;
+	width: 50px;
+	text-align: center;
+}
+
+.searchbar div.leftDate {
+	float: left;
+}
+
+.searchbar div.rightDate {
+	margin: auto 0px auto 215px;
+}

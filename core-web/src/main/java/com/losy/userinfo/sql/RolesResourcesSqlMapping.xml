@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+   
+<mapper namespace="com.losy.sql.sqlmapping.RolesResources">
+	<resultMap type="com.losy.userinfo.domain.RolesResources" id="vo">
+	    <result property="id" column="id" />
+	    <result property="roleId" column="roleId" />
+	    <result property="resourceId" column="resourceId" />
+	</resultMap>
+
+	<select id="getObjectById" parameterType="java.lang.Integer" resultMap="vo">
+		select * from t_sys_roles_resources where id=#{id}
+	</select>
+	
+	<delete id="removeById" parameterType="java.lang.Integer">
+		delete from t_sys_roles_resources where id = #{id}
+	</delete>
+	
+	<delete id="removeByIds" >
+		delete from t_sys_roles_resources where id in 
+		<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</delete>	
+	
+	<delete id="removeEntityBatch" parameterType="java.util.List">
+		delete from t_sys_roles_resources where id in 
+		<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+			#{item.id}
+		</foreach>
+	</delete>	
+
+	<select id="getListByPage"  resultMap="vo">
+		select * from t_sys_roles_resources 
+		<where>
+		<if test="roleId!=null">
+			AND roleId = #{roleId}
+		</if>	
+		<if test="resourceId!=null">
+			AND resourceId = #{resourceId}
+		</if>	
+		
+        </where>
+        ORDER BY 
+		<choose>
+			<when test="orderBy!=null and orderBy!=''">
+				${orderBy}
+			</when>
+			<otherwise>
+				id
+			</otherwise>
+		</choose>
+		<choose>
+			<when test="descOrAsc!=null and descOrAsc!=''">
+				${descOrAsc}
+			</when>
+			<otherwise>
+				asc 
+			</otherwise>
+		</choose>
+	</select>
+	  <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+	  <!--
+	  <selectKey resultType="int" keyProperty="baseId" order="BEFORE">select nextval('seq_xxx')</selectKey>
+	  -->
+	  <![CDATA[
+	  INSERT INTO t_sys_roles_resources(
+			id,
+			roleId,
+			resourceId
+			) VALUES (
+			#{id,jdbcType=VARCHAR},
+			#{roleId,jdbcType=INTEGER},
+			#{resourceId,jdbcType=INTEGER}
+		)	
+		]]>
+	  </insert>
+	  
+	  <insert id="insertBatch" parameterType="java.util.List">
+	  <![CDATA[
+	  		INSERT INTO t_sys_roles_resources(
+			id,
+			roleId,
+			resourceId
+			) VALUES 
+		]]>
+		<foreach collection="list" item="item" separator=",">
+		<![CDATA[
+			 (#{item.id,jdbcType=VARCHAR},#{item.roleId,jdbcType=INTEGER},#{item.resourceId,jdbcType=INTEGER})
+		]]>
+		</foreach>
+	  </insert>
+	  
+	  <update id="update">
+		UPDATE t_sys_roles_resources
+			<set>
+				<if test="roleId!=null">
+					 <![CDATA[ roleId = #{roleId,jdbcType=INTEGER},  ]]>
+				</if>	
+				<if test="resourceId!=null">
+					 <![CDATA[ resourceId = #{resourceId,jdbcType=INTEGER},  ]]>
+				</if>	
+			</set>
+			<where>
+			 <![CDATA[ and id = #{id,jdbcType=VARCHAR} ]]>  			  	
+			</where>  
+	  </update>	
+</mapper>

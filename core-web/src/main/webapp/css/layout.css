@@ -1,0 +1,70 @@
+*{
+	font-size: 14px;
+}
+.stripe_tb thead{
+	/**font-weight: bold;**/
+	font-size: 14px;
+}
+
+/*ע��ѡ�����Ĳ����ϵ*/
+.stripe_tb{border-collapse:collapse;table-layout:fixed;word-break:break-all;border: 1px solid #95bce2; clear:both;}
+.stripe_tb th{background:#B5CBE6; color:#039; line-height:15px; height:30px}
+.stripe_tb td{padding:6px 0px; border-bottom:1px solid #95bce2; text-align:center}
+.stripe_tb td *{padding:6px 0px}
+.stripe_tb tr.alt td{background:#ecf6fc} /*���н�������ż���м��ϱ���ɫ*/
+.stripe_tb tr.over td{background:#FEF3D1} /*��������������еı���ɫ*/
+
+
+
+
+
+.stripe_tb1 thead{
+	font-weight: bold;
+	font-size: 18pt;
+}
+
+/*ע��ѡ�����Ĳ����ϵ*/
+.stripe_tb1{border-collapse:collapse;table-layout:fixed;word-break:break-all;border: 1px solid #95bce2; clear:both;}
+.stripe_tb1 th{background:#B5CBE6; color:#039; line-height:30px; height:40px}
+.stripe_tb1 td{padding:6px 0px; border-bottom:1px solid #95bce2; vertical-align:top; text-align:center}
+.stripe_tb1 td *{padding:6px 0px}
+.stripe_tb1 tr.alt td{background:#ecf6fc} /*���н�������ż���м��ϱ���ɫ*/
+ 
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+.search_tb{border-color: #95bce2; border-spacing: 0;border-collapse: 0; border-radius:12px;}
+.search_tb tr{border-color: #95bce2; border-spacing: 0;border-collapse: 0;width: 100%;}
+.search_tb td{padding: 0px 0px 0px 5px;border-color: #95bce2; border-spacing: 0;border-collapse: 0;height: 30px;}
+
+
+.sub_blue{
+	color:#504f4f;
+	float:right;
+	width:99.9%;
+	height:auto;
+	border:1px solid #99c3ee;
+	background-color:#cee6ff;
+	margin: 10px 0 20px;
+	padding:15px 0 10px 0;
+}
+
+.sub_blue div{width: 100%;float: left;}
+
+.sub_blue dl{ margin:0px; padding:0px; margin-top:20px; margin-left:20px; height:30px; line-height:30px;}
+.sub_blue dt{ font-size:12px; color:#000; font-weight: bold; float:left; margin-left:30px;}
+.sub_blue dd{margin:0px; padding:0px; float:left;}
+.sub_blue label{ color:#000; font-size:12px; font-weight:bold; display:block; float:left;}
+.sub_blue span label{ color:#000; font-size:12px; font-weight:bold; display:block; float:left;}
+.sub_blue span{display:block;float:left;margin:5px 10px;  }

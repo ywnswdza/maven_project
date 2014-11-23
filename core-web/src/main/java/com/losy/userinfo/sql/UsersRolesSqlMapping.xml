@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+   
+<mapper namespace="com.losy.sql.sqlmapping.UsersRoles">
+	<resultMap type="com.losy.userinfo.domain.UsersRoles" id="vo">
+	    <result property="id" column="id" />
+	    <result property="roleId" column="roleId" />
+	    <result property="userId" column="userId" />
+	    <result property="isEnabled" column="isEnabled" />
+	    <result property="updateTime" column="updateTime" />
+	    <result property="createTime" column="createTime" />
+	</resultMap>
+
+	<select id="getObjectById" parameterType="java.lang.Integer" resultMap="vo">
+		select * from t_auth_usersRoles where id=#{id}
+	</select>
+	
+	<delete id="removeById" parameterType="java.lang.Integer">
+		delete from t_auth_usersRoles where id = #{id}
+	</delete>
+	
+	<delete id="removeByIds" >
+		delete from t_auth_usersRoles where id in 
+		<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</delete>	
+	
+	<delete id="removeEntityBatch" parameterType="java.util.List">
+		delete from t_auth_usersRoles where id in 
+		<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+			#{item.id}
+		</foreach>
+	</delete>	
+
+	<select id="getListByPage"  resultMap="vo">
+		select * from t_auth_usersRoles 
+		<where>
+		<if test="roleId!=null and roleId!=''">
+			AND roleId = #{roleId}
+		</if>	
+		<if test="userId!=null and userId!=''">
+			AND userId = #{userId}
+		</if>	
+		<if test="isEnabled!=null">
+			AND isEnabled = #{isEnabled}
+		</if>		
+		<if test="ltUpdateTime!=null and ltUpdateTime!=''">
+			<![CDATA[AND updateTime >= #{ltUpdateTime} ]]>
+		</if> 
+		<if test="gtUpdateTime!=null and gtUpdateTime!=''">
+			<![CDATA[AND updateTime <= #{gtUpdateTime} ]]>
+		</if> 
+		<if test="ltCreateTime!=null and ltCreateTime!=''">
+			<![CDATA[AND createTime >= #{ltCreateTime} ]]>
+		</if> 
+		<if test="gtCreateTime!=null and gtCreateTime!=''">
+			<![CDATA[AND createTime <= #{gtCreateTime} ]]>
+		</if> 
+        </where>
+        ORDER BY 
+		<choose>
+			<when test="orderBy!=null and orderBy!=''">
+				${orderBy}
+			</when>
+			<otherwise>
+				id
+			</otherwise>
+		</choose>
+		<choose>
+			<when test="descOrAsc!=null and descOrAsc!=''">
+				${descOrAsc}
+			</when>
+			<otherwise>
+				asc 
+			</otherwise>
+		</choose>
+	</select>
+	  <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+	  <!--
+	  <selectKey resultType="int" keyProperty="baseId" order="BEFORE">select nextval('seq_xxx')</selectKey>
+	  -->
+	  <![CDATA[
+	  INSERT INTO t_auth_usersRoles(
+			id,
+			roleId,
+			userId,
+			isEnabled,
+			updateTime,
+			createTime
+			) VALUES (
+			#{id,jdbcType=VARCHAR},
+			#{roleId,jdbcType=INTEGER},
+			#{userId,jdbcType=INTEGER},
+			#{isEnabled,jdbcType=BOOLEAN},
+			#{updateTime,jdbcType=DATE},
+			#{createTime,jdbcType=DATE}
+		)	
+		]]>
+	  </insert>
+	  
+	  <insert id="insertBatch" parameterType="java.util.List">
+	  <![CDATA[
+	  		INSERT INTO t_auth_usersRoles(
+			id,
+			roleId,
+			userId,
+			isEnabled,
+			updateTime,
+			createTime
+			) VALUES 
+		]]>
+		<foreach collection="list" item="item" separator=",">
+		<![CDATA[
+			 (#{item.id,jdbcType=VARCHAR},#{item.roleId,jdbcType=INTEGER},#{item.userId,jdbcType=INTEGER},#{item.isEnabled,jdbcType=BOOLEAN},#{item.updateTime,jdbcType=DATE},#{item.createTime,jdbcType=DATE})
+		]]>
+		</foreach>
+	  </insert>
+	  
+	  <update id="update">
+		UPDATE t_auth_usersRoles
+			<set>
+				<if test="roleId!=null and roleId!=''">
+					 <![CDATA[ roleId = #{roleId,jdbcType=INTEGER},  ]]>
+				</if>	
+				<if test="userId!=null and userId!=''">
+					 <![CDATA[ userId = #{userId,jdbcType=INTEGER},  ]]>
+				</if>	
+				<if test="isEnabled!=null">
+					<![CDATA[ isEnabled = #{isEnabled,jdbcType=BOOLEAN},  ]]>
+				</if>		
+				<if test="updateTime!=null and updateTime!=''">
+					<![CDATA[updateTime = #{updateTime,jdbcType=DATE},  ]]>
+				</if> 
+				<if test="createTime!=null and createTime!=''">
+					<![CDATA[createTime = #{createTime,jdbcType=DATE}  ]]>
+				</if> 
+			</set>
+			<where>
+			 <![CDATA[ and id = #{id,jdbcType=VARCHAR} ]]>  			  	
+			</where>  
+	  </update>	
+</mapper>
