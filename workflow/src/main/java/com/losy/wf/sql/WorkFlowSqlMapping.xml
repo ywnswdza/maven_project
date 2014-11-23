@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+   
+<mapper namespace="com.losy.wf.sql.sqlmapping.WorkFlow">
+	<resultMap type="com.losy.wf.domain.WorkFlow" id="vo">
+	    <result property="id" column="id" />
+	    <result property="flowName" column="flowName" />
+	    <result property="createName" column="createName" />
+	    <result property="descr" column="descr" />
+	</resultMap>
+
+	<select id="getObjectById" parameterType="java.lang.Integer" resultMap="vo">
+		select * from t_wf_workflow where id=#{id}
+	</select>
+	
+	<delete id="removeById" parameterType="java.lang.Integer">
+		delete from t_wf_workflow where id = #{id}
+	</delete>
+	
+	<delete id="removeByIds" >
+		delete from t_wf_workflow where id in 
+		<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</delete>	
+	
+	<delete id="removeEntityBatch" parameterType="java.util.List">
+		delete from t_wf_workflow where id in 
+		<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+			#{item.id}
+		</foreach>
+	</delete>	
+
+	<select id="getListByPage"  resultMap="vo">
+		select * from t_wf_workflow 
+	<where>
+	 	<if test="flowName!=null and flowName!=''">
+			AND flowName like '%${flowName}%'
+		</if> 	
+	 	<if test="createName!=null and createName!=''">
+			AND createName like '%${createName}%'
+		</if> 	
+	 	<if test="descr!=null and descr!=''">
+			AND descr like '%${descr}%'
+		</if> 	
+		<if test="appendWhere!=null and appendWhere!=''">
+			${appendWhere}
+		</if>           
+      </where>
+        ORDER BY 
+		<choose>
+			<when test="orderBy!=null and orderBy!=''">
+				${orderBy}
+			</when>
+			<otherwise>
+				id
+			</otherwise>
+		</choose>
+		<choose>
+			<when test="descOrAsc!=null and descOrAsc!=''">
+				${descOrAsc}
+			</when>
+			<otherwise>
+				asc 
+			</otherwise>
+		</choose>
+	</select>
+	  <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+	  <!--
+	  <selectKey resultType="int" keyProperty="baseId" order="BEFORE">select nextval('seq_xxx')</selectKey>
+	  -->
+	  <![CDATA[
+	  INSERT INTO t_wf_workflow(
+			id,
+			flowName,
+			createName,
+			descr
+			) VALUES (
+			#{id,jdbcType=VARCHAR},
+			#{flowName,jdbcType=VARCHAR},
+			#{createName,jdbcType=VARCHAR},
+			#{descr,jdbcType=VARCHAR}
+		)	
+		]]>
+	  </insert>
+	  
+	  <insert id="insertBatch" parameterType="java.util.List">
+	  <![CDATA[
+	  		INSERT INTO t_wf_workflow(
+			id,
+			flowName,
+			createName,
+			descr
+			) VALUES 
+		]]>
+		<foreach collection="list" item="item" separator=",">
+		<![CDATA[
+			 (#{item.id,jdbcType=VARCHAR},#{item.flowName,jdbcType=VARCHAR},#{item.createName,jdbcType=VARCHAR},#{item.descr,jdbcType=VARCHAR})
+		]]>
+		</foreach>
+	  </insert>
+	  
+	  <update id="update">
+		UPDATE t_wf_workflow
+			<set>
+			 	<if test="flowName!=null">
+					<![CDATA[flowName = #{flowName,jdbcType=VARCHAR},  ]]>
+				</if> 	
+			 	<if test="createName!=null">
+					<![CDATA[createName = #{createName,jdbcType=VARCHAR},  ]]>
+				</if> 	
+			 	<if test="descr!=null">
+					<![CDATA[descr = #{descr,jdbcType=VARCHAR}  ]]>
+				</if> 	
+			</set>
+			<where>
+			 <![CDATA[ and id = #{id,jdbcType=VARCHAR} ]]>  			  	
+			</where>  
+	  </update>	
+</mapper>

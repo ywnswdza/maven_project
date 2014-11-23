@@ -1,0 +1,38 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.losy</groupId>
+  <artifactId>workflow</artifactId>
+  <packaging>war</packaging>
+  <version>0.0.1-SNAPSHOT</version>
+  <name>workflow</name>
+  <url>http://maven.apache.org</url>
+   <properties>
+      <activiti-version>5.16</activiti-version>
+  </properties>
+  <dependencies>
+    <dependency>
+        <groupId>com.losy</groupId>
+		<artifactId>core-frame</artifactId>
+		<version>0.0.1-SNAPSHOT</version>      
+    	</dependency>
+    	<dependency>
+        <groupId>org.activiti</groupId>
+		<artifactId>activiti-spring</artifactId>
+		<version>${activiti-version}</version>      
+    </dependency>
+      <dependency>
+        <groupId>org.activiti</groupId>
+		<artifactId>activiti-engine</artifactId>
+		<version>${activiti-version}</version>      
+    </dependency>
+     <dependency>
+        <groupId>org.activiti</groupId>
+		<artifactId>activiti-bpmn-model</artifactId>
+		<version>${activiti-version}</version>      
+    </dependency>
+  </dependencies>
+  <build>
+    <finalName>workflow</finalName>
+  </build>
+</project>
