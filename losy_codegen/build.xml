@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="project" default="generator" basedir=".">
+	<!--代码生成工具的classpath -->
+	<property name="classes.dir" value="bin"/>
+	<!-- 同一工作空间，web项目下需要生成代码的classpath , basiccodeWeb 表示project name 
+	<property name="target.classes.dir" value="../xxwangw/WebRoot/WEB-INF/classes"/> -->
+	<property name="target.classes.dir" value="bin"/>
+	<property name="lib.dir" value="lib"/>
+    <target name="generator"  description="根据符合javax.persistence的实体类生成代码">
+        <java classname="com.losy.codegen.core.CodeGenerator">
+    		<classpath>
+    			<path location="${classes.dir}"></path>
+    		</classpath>    
+        	<classpath>
+        		<path location="${target.classes.dir}"></path>
+        	</classpath>
+        	<classpath>
+        		<fileset file="${lib.dir}/*.jar"></fileset>
+        	</classpath>
+        	<!-- classpath下的包名和类名 -->
+        	<arg value="code.entity.ModelEntity"/>
+    	</java>
+    </target>
+</project>
